@@ -3,17 +3,16 @@ operations instead of scattering password and token code throughout your API rou
 
 
 
-import os
 from datetime import datetime, timedelta, timezone
 
 import jwt
-from dotenv import load_dotenv
 from pwdlib import PasswordHash
 
-password_hash = PasswordHash.recommended()
-load_dotenv()
+# config.py checks the secret exists, so tokens are never signed with an empty key
+from app.config import JWT_SECRET_KEY
 
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+password_hash = PasswordHash.recommended()
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 

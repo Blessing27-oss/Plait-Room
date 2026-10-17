@@ -1,22 +1,17 @@
 """database connections/sessions"""
 
-import os
-
-from dotenv import load_dotenv
 # SqlAlchemy describes and interacts with the database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 # Alembic tracks changes to the structure of that database.
 
+# retrieves our connections string (config.py checks it exists)
+from app.config import DATABASE_URL
 
-# loads variables from .env
-load_dotenv()
-
-# retrieves our connections string
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-# creates SQLAlchemy's central connection interface to PostgreSQL
-engine = create_engine(DATABASE_URL)
+# creates SQLAlchemy's central connection interface to PostgreSQL.
+# pool_pre_ping checks a connection still works before using it. Neon closes connections
+# when the database sleeps after inactivity, so without this the first request after a pause could fail.
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 # SessionLocal will let individual API requests open a database session
 SessionLocal = sessionmaker(
